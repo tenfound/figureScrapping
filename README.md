@@ -10,6 +10,9 @@ Bonus Objectives:
 3. Search features
 
 How to achieve Objective 1:
-1. A way to access the pre-owned section automatically
-2. For each listing in page 'n' of the pre-owned section, parse through the HTML data using beautiful soup
-3. Save crucial information (eg. Name, Price, G-Code, )
+1.1 A way to access the pre-owned section automatically
+1.2 For each listing in page 'n' of the pre-owned section, parse through the HTML data using beautiful soup
+1.3 Save crucial information (eg. Name, Price, G-Code, )
+
+How to achieve 1.1:
+use selenium
