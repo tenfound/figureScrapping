@@ -19,6 +19,14 @@ options.add_argument("--disable-gpu")
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=options)
 
+class Figure:
+    def __init__(self, name, g_code, price, DOR, size):
+        self.name = name
+        self.g_code = g_code
+        self.price = price
+        self.DOR = DOR
+        self.size = size
+
 pages = 1
 gcode_list = []
 while pages <= 2 :
@@ -36,7 +44,6 @@ while pages <= 2 :
         gcode_list.append(gcode)
     pages += 1
 
-        
 
 base_link = "https://www.amiami.com"
 count = 0
