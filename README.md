@@ -14,14 +14,6 @@ Problems to tackle / Tasks to do:
 - eg. https://www.amiami.com/eng/detail/?gcode=FIGURE-156533-R & https://www.amiami.com/eng/detail/?gcode=FIGURE-144891-R
 - can use "item-detail__price_selling-price" class instead of "item-detail__price" class, the actual selling price of the item.
 - list price & discount price (the one that's cancelled) is the same. Use one or the other.
-2. Create lists to grow variables
-3. Store figure variables into variable list
-
-
-Some classes to add:
-Figure name: item-detail__section-title
-Brand: item-detail__brand (same as item_about[4])
-Price: item-detail__price
 
 
 find() vs findAll():
