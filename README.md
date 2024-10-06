@@ -14,6 +14,8 @@ Problems to tackle / Tasks to do:
 - eg. https://www.amiami.com/eng/detail/?gcode=FIGURE-156533-R & https://www.amiami.com/eng/detail/?gcode=FIGURE-144891-R
 - can use "item-detail__price_selling-price" class instead of "item-detail__price" class, the actual selling price of the item.
 - list price & discount price (the one that's cancelled) is the same. Use one or the other.
+2. Refer to scrap_v2 cell 4/5.
+3. Proceed with learning how to do database i guess.
 
 
 find() vs findAll():
