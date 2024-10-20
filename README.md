@@ -16,6 +16,7 @@ Problems to tackle / Tasks to do:
 - list price & discount price (the one that's cancelled) is the same. Use one or the other.
 2. Refer to scrap_v2 cell 4/5.
 3. Proceed with learning how to do database i guess.
+4. Ammend Size Specifications part.
 
 
 find() vs findAll():
@@ -28,3 +29,5 @@ find() returns a string if something is found and None if nothing is found.
 Why used used lists instead of growing the dataframe:
 https://stackoverflow.com/questions/13784192/creating-an-empty-pandas-dataframe-and-then-filling-it
 & also, df.append() is deprecated. 
+
+Open Price: Figure is likely a prize figure.

@@ -5,6 +5,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from time import sleep
 import time
+import pandas as pd
+import numpy as np
 
 # Setup Selenium options
 options = Options()
@@ -62,26 +64,44 @@ count = 0
 
 # Extracts HTML data of the individual figures
 for gcode_url in gcode_list:
-    figure_url = base_link + gcode_list[0]
-    print(figure_url)
+    print(count)
+    figure_url = base_link + gcode_list[count]
+    # print(figure_url)
     driver.get(figure_url)
-    # time.sleep(10)                       # Unsure if I need to add a sleep function here to prevent overloading the server. Referenced example has a waitTime variable of 5. 
+    time.sleep(5)                       # Unsure if I need to add a sleep function here to prevent overloading the server. Referenced example has a waitTime variable of 5. 
     figure_html = driver.page_source
-    driver.quit()
+    # driver.quit()
 
     figure_soup = BeautifulSoup(figure_html, "html.parser")
     item_details = figure_soup.findAll(class_ = ['item-detail__right', 'item-about'])
-    item_about = figure_soup.findAll(class_ = ["item-about__data-text"], limit = 8)
+    item_about = figure_soup.findAll(class_ = ["item-about__data-text"], limit = 9)
     
-    fig_name = figure_soup.find(class_ = ["item-detail__section-title"])
-    fig_release_date = item_about[0]
-    fig_price = item_about[1]
-    fig_shop_code = item_about[2]
-    fig_JAN_code = item_about[3]
-    fig_brand = item_about[4]
-    fig_series_title = item_about[5]
-    fig_char_name = item_about[6]
-    fig_sculptor = item_about[7]
+    temp_list = []
+    for i in item_about:
+        temp_list.append(i.text)
+        
+    fig_name = figure_soup.find(class_ = ["item-detail__section-title"]).text
+    fig_release_date = temp_list[0]
+    fig_price = temp_list[1]
+    fig_shop_code = temp_list[2]
+    fig_JAN_code = temp_list[3]
+    fig_brand = temp_list[4]
+    fig_series_title = temp_list[5]
+    fig_char_name = temp_list[6]
+    if temp_list[7] == "The maximum purchase quantity for this item is 1 per account/shipping address.":
+         fig_sculptor = np.nan
+    else:
+         fig_sculptor = temp_list[7]
+
+    # fig_name = figure_soup.find(class_ = ["item-detail__section-title"])
+    # fig_release_date = item_about[0]
+    # fig_price = item_about[1]
+    # fig_shop_code = item_about[2]
+    # fig_JAN_code = item_about[3]
+    # fig_brand = item_about[4]
+    # fig_series_title = item_about[5]
+    # fig_char_name = item_about[6]
+    # fig_sculptor = item_about[7]         
     
     item_specs = figure_soup.find(class_ = ["more"])
     # print(item_specs.prettify())
@@ -89,10 +109,11 @@ for gcode_url in gcode_list:
     specs = item_specs.get_text("|")    # Joins the bits of text together using | & clears out the <br/> tags
     splitSpecs = specs.split("|")       # Separates the long string into bits of strings so we can access stuff we want easier
     for s in splitSpecs:
-        if "Size" not in s:
-            continue
-        else:
+        if "Size" in s:
+            # fig_size = ""
             fig_size = s
+        else:
+            fig_size = temp_list[8]
     
     name_list.append(fig_name)
     date_list.append(fig_release_date)
@@ -104,7 +125,10 @@ for gcode_url in gcode_list:
     char_name_list.append(fig_char_name)
     sculptor_list.append(fig_sculptor)
     size_list.append(fig_size)
-    
+    count += 1
+
+driver.quit()
+
 df_figure = pd.DataFrame(
     {'Name': name_list,
      'Release Date': date_list,
@@ -117,6 +141,9 @@ df_figure = pd.DataFrame(
      'Sculptor': sculptor_list,
      'Size Specifications': size_list
     })
+
+with pd.ExcelWriter('Pre-Owned Prices.xlsx') as writer:
+        df_figure.to_excel(writer, sheet_name='testing')
 
 # figure = {'Name': fig_name,
 #         'Release Date': fig_release_date,
