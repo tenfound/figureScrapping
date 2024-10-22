@@ -74,7 +74,7 @@ for gcode_url in gcode_list:
 
     figure_soup = BeautifulSoup(figure_html, "html.parser")
     item_details = figure_soup.findAll(class_ = ['item-detail__right', 'item-about'])
-    item_about = figure_soup.findAll(class_ = ["item-about__data-text"], limit = 9)
+    item_about = figure_soup.findAll(class_ = ["item-about__data-text"], limit = 10)
     
     temp_list = []
     for i in item_about:
@@ -91,20 +91,9 @@ for gcode_url in gcode_list:
     if temp_list[7] == "The maximum purchase quantity for this item is 1 per account/shipping address.":
          fig_sculptor = np.nan
     else:
-         fig_sculptor = temp_list[7]
-
-    # fig_name = figure_soup.find(class_ = ["item-detail__section-title"])
-    # fig_release_date = item_about[0]
-    # fig_price = item_about[1]
-    # fig_shop_code = item_about[2]
-    # fig_JAN_code = item_about[3]
-    # fig_brand = item_about[4]
-    # fig_series_title = item_about[5]
-    # fig_char_name = item_about[6]
-    # fig_sculptor = item_about[7]         
+         fig_sculptor = temp_list[7]    
     
     item_specs = figure_soup.find(class_ = ["more"])
-    # print(item_specs.prettify())
     
     specs = item_specs.get_text("|")    # Joins the bits of text together using | & clears out the <br/> tags
     splitSpecs = specs.split("|")       # Separates the long string into bits of strings so we can access stuff we want easier
@@ -113,7 +102,7 @@ for gcode_url in gcode_list:
             # fig_size = ""
             fig_size = s
         else:
-            fig_size = temp_list[8]
+            fig_size = temp_list[9]
     
     name_list.append(fig_name)
     date_list.append(fig_release_date)
@@ -144,16 +133,3 @@ df_figure = pd.DataFrame(
 
 with pd.ExcelWriter('Pre-Owned Prices.xlsx') as writer:
         df_figure.to_excel(writer, sheet_name='testing')
-
-# figure = {'Name': fig_name,
-#         'Release Date': fig_release_date,
-#         'Price': fig_price,
-#         'Shop Code': fig_shop_code,
-#         'JAN Code': fig_JAN_code,
-#         'Brand': fig_brand,
-#         'Series Title': fig_series_title,
-#         'Character Name': fig_char_name,
-#         'Sculptor': fig_sculptor,
-#        }
-# df = pd.DataFrame(figure)
-# df = df._append(df2, ignore_index = True)
