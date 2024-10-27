@@ -17,6 +17,7 @@ Problems to tackle / Tasks to do:
 2. Refer to scrap_v2 cell 4/5.
 3. Proceed with learning how to do database i guess.
 4. Ammend Size Specifications part.
+5. Some things only have "item-about__data link" as classes mixed in.
 
 
 find() vs findAll():

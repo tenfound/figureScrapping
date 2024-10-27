@@ -65,6 +65,7 @@ count = 0
 # Extracts HTML data of the individual figures
 for gcode_url in gcode_list:
     print(count)
+    # try:
     figure_url = base_link + gcode_list[count]
     # print(figure_url)
     driver.get(figure_url)
@@ -89,20 +90,24 @@ for gcode_url in gcode_list:
     fig_series_title = temp_list[5]
     fig_char_name = temp_list[6]
     if temp_list[7] == "The maximum purchase quantity for this item is 1 per account/shipping address.":
-         fig_sculptor = np.nan
+        fig_sculptor = np.nan
     else:
-         fig_sculptor = temp_list[7]    
+        fig_sculptor = temp_list[7]    
     
     item_specs = figure_soup.find(class_ = ["more"])
     
     specs = item_specs.get_text("|")    # Joins the bits of text together using | & clears out the <br/> tags
     splitSpecs = specs.split("|")       # Separates the long string into bits of strings so we can access stuff we want easier
+    flag = 0
     for s in splitSpecs:
-        if "Size" in s:
-            # fig_size = ""
-            fig_size = s
-        else:
-            fig_size = temp_list[9]
+        if flag != 1:
+            if "Size" in s:
+                # fig_size = ""
+                fig_size = s
+                flag = 1
+            else:
+                fig_size = temp_list[8]
+            
     
     name_list.append(fig_name)
     date_list.append(fig_release_date)
@@ -115,6 +120,9 @@ for gcode_url in gcode_list:
     sculptor_list.append(fig_sculptor)
     size_list.append(fig_size)
     count += 1
+
+    # except:
+    # print(figure_url)
 
 driver.quit()
 
