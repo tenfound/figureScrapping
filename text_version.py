@@ -64,7 +64,7 @@ count = 0
 
 # Extracts HTML data of the individual figures
 for gcode_url in gcode_list:
-    print(count)
+    # print(count)
     # try:
     figure_url = base_link + gcode_list[count]
     # print(figure_url)
@@ -72,56 +72,70 @@ for gcode_url in gcode_list:
     time.sleep(5)                       # Unsure if I need to add a sleep function here to prevent overloading the server. Referenced example has a waitTime variable of 5. 
     figure_html = driver.page_source
     # driver.quit()
-
-    figure_soup = BeautifulSoup(figure_html, "html.parser")
-    item_details = figure_soup.findAll(class_ = ['item-detail__right', 'item-about'])
-    item_about = figure_soup.findAll(class_ = ["item-about__data-text"], limit = 10)
-    
-    temp_list = []
-    for i in item_about:
-        temp_list.append(i.text)
+    try:
+        figure_soup = BeautifulSoup(figure_html, "html.parser")
+        item_details = figure_soup.findAll(class_ = ['item-detail__right', 'item-about'])
+        item_about = figure_soup.findAll(class_ = ["item-about__data-text"], limit = 11)
         
-    fig_name = figure_soup.find(class_ = ["item-detail__section-title"]).text
-    fig_release_date = temp_list[0]
-    fig_price = temp_list[1]
-    fig_shop_code = temp_list[2]
-    fig_JAN_code = temp_list[3]
-    fig_brand = temp_list[4]
-    fig_series_title = temp_list[5]
-    fig_char_name = temp_list[6]
-    if temp_list[7] == "The maximum purchase quantity for this item is 1 per account/shipping address.":
-        fig_sculptor = np.nan
-    else:
-        fig_sculptor = temp_list[7]    
-    
-    item_specs = figure_soup.find(class_ = ["more"])
-    
-    specs = item_specs.get_text("|")    # Joins the bits of text together using | & clears out the <br/> tags
-    splitSpecs = specs.split("|")       # Separates the long string into bits of strings so we can access stuff we want easier
-    flag = 0
-    for s in splitSpecs:
-        if flag != 1:
-            if "Size" in s:
-                # fig_size = ""
-                fig_size = s
-                flag = 1
-            else:
-                fig_size = temp_list[8]
+        temp_list = []
+        for i in item_about:
+            temp_list.append(i.text)
             
-    
-    name_list.append(fig_name)
-    date_list.append(fig_release_date)
-    price_list.append(fig_price)
-    shop_code_list.append(fig_shop_code)
-    JAN_code_list.append(fig_JAN_code)
-    brand_list.append(fig_brand)
-    series_title_list.append(fig_series_title)
-    char_name_list.append(fig_char_name)
-    sculptor_list.append(fig_sculptor)
-    size_list.append(fig_size)
-    count += 1
+        fig_name = figure_soup.find(class_ = ["item-detail__section-title"]).text
+        fig_release_date = temp_list[0]
+        fig_price = temp_list[1]
+        fig_shop_code = temp_list[2]
+        fig_JAN_code = temp_list[3]
+        fig_brand = temp_list[4]
+        fig_series_title = temp_list[5]
+        fig_char_name = temp_list[6]
+        if temp_list[7] == "The maximum purchase quantity for this item is 1 per account/shipping address.":
+            fig_sculptor = np.nan
+        else:
+            fig_sculptor = temp_list[7]    
+        
+        item_specs = figure_soup.find(class_ = ["more"])
+        
+        specs = item_specs.get_text("|")    # Joins the bits of text together using | & clears out the <br/> tags
+        splitSpecs = specs.split("|")       # Separates the long string into bits of strings so we can access stuff we want easier
+        flag = 0
+        for s in splitSpecs:
+            if flag != 1:
+                if "Size" in s:
+                    fig_size = s
+                    flag = 1               
+                    # if "Please confirm the following conditions of pre-owned items before placing order" not in temp_list[9]:
+                    #     fig_size = temp_list[9]
+                    # # elif "The maximum purchase quantity for this item is 1 per account/shipping address." not in temp_list[8]:
+                    # else:
+                    #     temp_list[8]
+        
+        if flag == 0:
+            for temp_item in temp_list:
+                if flag == 0:
+                    if "Size:" in temp_item or "Scale:" in temp_item:
+                        fig_size = temp_item
+                        flag = 1
+            if flag == 0:
+                fig_size = "Error"
 
-    # except:
+                
+        
+        name_list.append(fig_name)
+        date_list.append(fig_release_date)
+        price_list.append(fig_price)
+        shop_code_list.append(fig_shop_code)
+        JAN_code_list.append(fig_JAN_code)
+        brand_list.append(fig_brand)
+        series_title_list.append(fig_series_title)
+        char_name_list.append(fig_char_name)
+        sculptor_list.append(fig_sculptor)
+        size_list.append(fig_size)
+        count += 1
+
+    except:
+        print(figure_url)
+        count += 1
     # print(figure_url)
 
 driver.quit()
