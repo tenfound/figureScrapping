@@ -12,22 +12,13 @@ import numpy as np
 options = Options()
 
 # Do NOT use headless mode initially to see the CAPTCHA/challenge
-# options.add_argument("--headless")  # You can enable this later
 options.add_argument("--disable-gpu")
-# options.add_argument("--no-sandbox")
-# options.add_argument("--disable-dev-shm-usage")
 
 # Initialize the driver
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=options)
 
-# class Figure:
-#     def __init__(self, name, g_code, price, DOR, size):
-#         self.name = name
-#         self.g_code = g_code
-#         self.price = price
-#         self.DOR = DOR
-#         self.size = size
+
         
 name_list = []
 date_list = []
@@ -64,14 +55,11 @@ count = 0
 
 # Extracts HTML data of the individual figures
 for gcode_url in gcode_list:
-    # print(count)
-    # try:
     figure_url = base_link + gcode_list[count]
-    # print(figure_url)
     driver.get(figure_url)
     time.sleep(5)                       # Unsure if I need to add a sleep function here to prevent overloading the server. Referenced example has a waitTime variable of 5. 
     figure_html = driver.page_source
-    # driver.quit()
+
     try:
         figure_soup = BeautifulSoup(figure_html, "html.parser")
         item_details = figure_soup.findAll(class_ = ['item-detail__right', 'item-about'])
@@ -104,11 +92,6 @@ for gcode_url in gcode_list:
                 if "Size" in s:
                     fig_size = s
                     flag = 1               
-                    # if "Please confirm the following conditions of pre-owned items before placing order" not in temp_list[9]:
-                    #     fig_size = temp_list[9]
-                    # # elif "The maximum purchase quantity for this item is 1 per account/shipping address." not in temp_list[8]:
-                    # else:
-                    #     temp_list[8]
         
         if flag == 0:
             for temp_item in temp_list:
@@ -117,9 +100,7 @@ for gcode_url in gcode_list:
                         fig_size = temp_item
                         flag = 1
             if flag == 0:
-                fig_size = "Error"
-
-                
+                fig_size = "Error"                
         
         name_list.append(fig_name)
         date_list.append(fig_release_date)
@@ -136,7 +117,6 @@ for gcode_url in gcode_list:
     except:
         print(figure_url)
         count += 1
-    # print(figure_url)
 
 driver.quit()
 
@@ -152,6 +132,13 @@ df_figure = pd.DataFrame(
      'Sculptor': sculptor_list,
      'Size Specifications': size_list
     })
+
+fig_grade = ['A', 'A\-', 'B\+', 'B', 'C', 'J']      # "+" & "-" also included as regex expressions. "\" to match literal characters
+box_grade = ['A', 'B', 'C', 'N']
+bonus_grade = ['\[Bonus\]', '']
+product_grade = [fr'\(Pre-owned ITEM:{fig}/BOX:{box}\){bonus}' for fig in fig_grade for box in box_grade for bonus in bonus_grade]
+
+df_figure["Name"] = df_figure["Name"].replace(to_replace=product_grade, value='', regex=True)
 
 with pd.ExcelWriter('Pre-Owned Prices.xlsx') as writer:
         df_figure.to_excel(writer, sheet_name='testing')
