@@ -44,7 +44,6 @@ count = 0
 # Extracts HTML data of the individual figures
 for gcode_url in gcode_list:
     figure_url = base_link + gcode_list[count]
-    # print(figure_url)
     driver.get(figure_url)
     time.sleep(5)                       # Unsure if I need to add a sleep function here to prevent overloading the server. Referenced example has a waitTime variable of 5. 
     figure_html = driver.page_source
@@ -76,10 +75,23 @@ for gcode_url in gcode_list:
     except:
         print(figure_url)
         count += 1
-    # print(figure_url)
 
 driver.quit()
 figure_df = pd.DataFrame(figures)
+
+fig_grade = ['A', 'A\-', 'B\+', 'B', 'C', 'J']      # "+" & "-" also included as regex expressions. "\" to match literal characters
+box_grade = ['A', 'B', 'C', 'N']
+bonus_grade = ['\[Bonus\]', '']
+product_grade = [fr'\(Pre-owned ITEM:{fig}/BOX:{box}\){bonus}' for fig in fig_grade for box in box_grade for bonus in bonus_grade]
+
+# df_figure["Name"] = df_figure["Name"].replace(to_replace=product_grade, value='', regex=True)
+
+# fig_grade = ['A', 'A\-', 'B\+', 'B', 'C', 'J']      # "+" & "-" also included as regex expressions. "\" to match literal characters
+# box_grade = ['A', 'B', 'C', 'N']
+# bonus_grade = ['\[Bonus\]', '']
+# product_grade = [fr'\(Pre-owned ITEM:{fig}/BOX:{box}\){bonus}' for fig in fig_grade for box in box_grade for bonus in bonus_grade]
+
+# df_figure["Name"] = df_figure["Name"].replace(to_replace=product_grade, value='', regex=True)
 
 with pd.ExcelWriter('Pre-Owned Prices.xlsx') as writer:
         figure_df.to_excel(writer, sheet_name='testing')
