@@ -43,9 +43,9 @@ count = 0
 
 # Extracts HTML data of the individual figures
 for gcode_url in gcode_list:
-    figure_url = base_link + gcode_list[count]
+    figure_url = base_link + gcode_list[0]
     driver.get(figure_url)
-    time.sleep(5)                       # Unsure if I need to add a sleep function here to prevent overloading the server. Referenced example has a waitTime variable of 5. 
+    time.sleep(5)
     figure_html = driver.page_source
     try:
         figure_soup = BeautifulSoup(figure_html, "html.parser")        
@@ -53,6 +53,10 @@ for gcode_url in gcode_list:
         figure_info = {}
 
         for dl in figure_soup.findAll("dl"):
+            key = "Name"
+            value = figure_soup.find(class_ = ["item-detail__section-title"]).text
+            figure_info[key] = value
+
             for dt, dd in zip(dl.findAll("dt"), dl.findAll("dd")):
                 key = dt.get_text(strip=True)
                 if key == "Specifications":
@@ -69,7 +73,6 @@ for gcode_url in gcode_list:
                 else:
                     figure_info[key] = value
         figures.append(figure_info)
-        # print(figures)
         count += 1
 
     except:
@@ -86,12 +89,5 @@ product_grade = [fr'\(Pre-owned ITEM:{fig}/BOX:{box}\){bonus}' for fig in fig_gr
 
 # df_figure["Name"] = df_figure["Name"].replace(to_replace=product_grade, value='', regex=True)
 
-# fig_grade = ['A', 'A\-', 'B\+', 'B', 'C', 'J']      # "+" & "-" also included as regex expressions. "\" to match literal characters
-# box_grade = ['A', 'B', 'C', 'N']
-# bonus_grade = ['\[Bonus\]', '']
-# product_grade = [fr'\(Pre-owned ITEM:{fig}/BOX:{box}\){bonus}' for fig in fig_grade for box in box_grade for bonus in bonus_grade]
-
-# df_figure["Name"] = df_figure["Name"].replace(to_replace=product_grade, value='', regex=True)
-
-with pd.ExcelWriter('Pre-Owned Prices.xlsx') as writer:
-        figure_df.to_excel(writer, sheet_name='testing')
+# with pd.ExcelWriter('Pre-Owned Prices.xlsx') as writer:
+#         figure_df.to_excel(writer, sheet_name='testing')
